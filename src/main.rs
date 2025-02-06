@@ -18,12 +18,12 @@ struct FolderResponse {
 struct Folder {
     id: u32,
     code: String,
-    siret: String,
+    siret: Option<String>,
     nom_dossier: String,
     adresse_email: Option<String>,
     telephone: Option<String>,
     nom_contact: Option<String>,
-    qualite: Option<String>,
+    qualite: Option<u32>,
     annee: Option<String>
 }
 
@@ -51,6 +51,8 @@ async fn fetch_data(credentials: &ApiCredentials, folder_code: Option<String>) -
                 response.status()
             ));
         }
+
+        println!("Fetching page {}...", page);
 
         let data: FolderResponse = response
             .json()
@@ -101,13 +103,16 @@ async fn main() {
 
     match result {
         Ok(folders) => {
-            println!("=== {} dossier(s) trouvé(s) ===", folders.len());
+            println!("=== {} dossier(s) trouvé(s) ===\n\n", folders.len());
             for folder in folders {
-                println!("- {:?}", folder);
+                println!("- {:?}\n", folder);
             }
         }
         Err(e) => {
             eprintln!("Erreur: {}", e);
         }
     }
+
+    println!("\nPress any key to exit...");
+    std::io::stdin().read_line(&mut String::new()).unwrap();
 }
